@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 02-feb-2015 19:57:53 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="Hibernate.Subtipo" table="subtipo" catalog="inventariohibernate">
+        <id name="idSubtipo" type="java.lang.Integer">
+            <column name="idSubtipo" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="tipo" class="Hibernate.Tipo" fetch="select">
+            <column name="idTipo" />
+        </many-to-one>
+        <property name="nombre" type="string">
+            <column name="nombre" length="150" />
+        </property>
+        <set name="componentes" table="componente" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="idSubtipo" />
+            </key>
+            <one-to-many class="Hibernate.Componente" />
+        </set>
+    </class>
+</hibernate-mapping>

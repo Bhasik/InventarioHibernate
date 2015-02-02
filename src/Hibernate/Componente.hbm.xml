@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 02-feb-2015 19:57:53 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="Hibernate.Componente" table="componente" catalog="inventariohibernate">
+        <id name="idComponente" type="java.lang.Integer">
+            <column name="idComponente" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="subtipo" class="Hibernate.Subtipo" fetch="select">
+            <column name="idSubtipo" />
+        </many-to-one>
+        <property name="nombre" type="string">
+            <column name="nombre" length="150" />
+        </property>
+        <property name="pvp" type="java.lang.Integer">
+            <column name="PVP" />
+        </property>
+        <property name="precioCoste" type="java.lang.Integer">
+            <column name="precioCoste" />
+        </property>
+        <property name="stock" type="java.lang.Integer">
+            <column name="stock" />
+        </property>
+        <property name="descripcion" type="string">
+            <column name="descripcion" length="65535" />
+        </property>
+        <property name="fechaCompra" type="date">
+            <column name="fechaCompra" length="10" />
+        </property>
+        <property name="estado" type="java.lang.Boolean">
+            <column name="estado" />
+        </property>
+    </class>
+</hibernate-mapping>
