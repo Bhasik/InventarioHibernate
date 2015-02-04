@@ -48,9 +48,13 @@ public class Principal {
 	
 			case 2:
 				
+				menuModificarComponente(seleccionarComponente());
+				
 				break;
 				
 			case 3:
+				
+				borrarComponente();
 				
 				break;
 				
@@ -217,7 +221,189 @@ public class Principal {
 
 	
 	
+	public static void mostrarComponentes(int idSubtipo){
+		
+		Componente comp = new Componente();
+		
+		SessionFactory sesionF = SessionFactoryUtil.getSessionFactory();
+		Session sesion = sesionF.openSession();
+		Transaction trans = sesion.beginTransaction();
+		
+		
+		Query q = sesion.createQuery("from Componente where idSubtipo =" + idSubtipo);
+		
+		Iterator<Componente> iter;
+		q.setFetchSize(10);
+		iter = q.iterate();
+				
+				while(iter.hasNext()){
+					
+					comp = (Componente) iter.next();
+					System.out.println(comp.getIdComponente() + "-" + comp.getNombre());
+					
+				}
+
+	}
 	
+	public static Componente cogerComponente(int idComponente){
+		
+		Componente comp = new Componente();
+		
+		SessionFactory sesionF = SessionFactoryUtil.getSessionFactory();
+		Session sesion = sesionF.openSession();
+		Transaction trans = sesion.beginTransaction();
+		
+		Tipo tipo = new Tipo();
+		Query q = sesion.createQuery("from Componente where idComponente =" + idComponente);
+		
+		Iterator<Componente> iter;
+		q.setFetchSize(10);
+		iter = q.iterate();
+				
+				while(iter.hasNext()){
+					
+					comp = (Componente) iter.next();
+					
+					return comp;
+					
+				}
+		
+		return null;
+		
+		
+		
+		
+		
+	}
 	
+	public static void borrarComponente(){
+		
+		SessionFactory sesionF = SessionFactoryUtil.getSessionFactory();
+		Session sesion = sesionF.openSession();
+		Transaction trans = sesion.beginTransaction();
+				
+		Componente comp = new Componente();
+		
+		System.out.println("Seleccione tipo para buscar en los suptipos");
+		mostrarTipos();
+		int idTipo = Integer.parseInt(leer.nextLine());
+		
+		System.out.println("Seleccione el subtipo para ver sus componentes");
+		mostrarSubtipo(idTipo);
+		int idSubtipo = Integer.parseInt(leer.nextLine());
+		
+		System.out.println("Elija el componente que desea eliminar");
+		mostrarComponentes(idSubtipo);
+		int idComponente = Integer.parseInt(leer.nextLine());
+		comp = cogerComponente(idComponente);
+		
+		Query q = sesion.createQuery("from Componente where idComponente =" + idComponente);
+		
+		Iterator<Componente> iter;
+		q.setFetchSize(10);
+		iter = q.iterate();
+		
+		while(iter.hasNext()){
+			
+			comp = (Componente) iter.next();
+			System.out.println(comp.getIdComponente() + "-" + comp.getNombre());
+			
+		}
+
+		
+		
+		sesion.delete(comp);
+		trans.commit();
+		sesion.close();
+		
+	}
+	
+	public static Componente seleccionarComponente(){
+		
+		Componente comp = new Componente();
+
+		System.out.println("Seleccione tipo para buscar en los suptipos");
+		mostrarTipos();
+		int idTipo = Integer.parseInt(leer.nextLine());
+		
+		System.out.println("Seleccione el subtipo para ver sus componentes");
+		mostrarSubtipo(idTipo);
+		int idSubtipo = Integer.parseInt(leer.nextLine());
+		
+		System.out.println("Elija el componente que desea eliminar");
+		mostrarComponentes(idSubtipo);
+		int idComponente = Integer.parseInt(leer.nextLine());
+		comp = cogerComponente(idComponente);
+		
+		return comp;
+		
+	}
+
+	public static void menuModificarComponente(Componente comp){
+		
+		int menu=-1;
+		
+		do{
+			
+		
+		System.out.println("MODIFICAR COMPONENTE");
+		System.out.println("=====================");
+		System.out.println("1.-Cambiar nombre");
+		System.out.println("2.-Cambiar descripcion");
+		System.out.println("3.-Cambiar precio venta publico");
+		System.out.println("4.-Cambiar precio coste");
+		System.out.println("5.-Cambiar stock");
+		System.out.println("6.-Cambiar subtipo");
+		System.out.println("======================");
+		System.out.println("Seleccione una opcion");
+		menu=Integer.parseInt(leer.nextLine());
+		
+		
+		
+		switch (menu) {
+		case 1:
+			
+			cambiarNombre(comp);
+			
+			break;
+
+		default:
+			break;
+		}
+		}while(menu!=0);
+		
+		
+	}
+	
+	public static void cambiarNombre(Componente comp){
+		
+		SessionFactory sesionF = SessionFactoryUtil.getSessionFactory();
+		Session sesion = sesionF.openSession();
+		Transaction trans = sesion.beginTransaction();
+				
+		System.out.println("El nombre actual es: " + comp.getNombre());
+		
+		System.out.println("Introduzca el nuevo nombre");
+		String nombre = leer.nextLine();
+		
+		Query q = sesion.createQuery("from Componente where idComponente =" + comp.getIdComponente());
+		
+		Iterator<Componente> iter;
+		q.setFetchSize(10);
+		iter = q.iterate();
+		
+		while(iter.hasNext()){
+			
+			comp.setNombre(nombre);
+			
+		}
+
+		sesion.update(comp);
+		trans.commit();
+		sesion.close();
+		
+		
+		
+	}
 	
 }
