@@ -95,54 +95,65 @@ public class Principal {
 		String nombre = null, descripcion = null, fechaCompra;
 		int pvp = 0, precioCoste = 0, stock = 0;
 		Date fecha = new Date();
+		int idTipo;
+		boolean comprobar = true;
 
-		try {
+		do {
 
-			do {
+			System.out.println("Nombre del componente");
+			nombre = leer.nextLine();
 
-				System.out.println("Nombre del componente");
-				nombre = leer.nextLine();
+		} while (!comprobarVacio(nombre));
 
-			} while (comprobarVacio(nombre));
+		do {
 
-			do {
+			System.out.println("Descripcion del componente");
+			descripcion = leer.nextLine();
 
-				System.out.println("Descripcion del componente");
-				descripcion = leer.nextLine();
+		} while (!comprobarVacio(descripcion));
 
-			} while (comprobarVacio(descripcion));
+		System.out.println("Precio coste del componente");
+		precioCoste = comprobarNumero();
 
-			System.out.println("Precio coste del componente");
-			precioCoste = Integer.parseInt(leer.nextLine());
+		System.out.println("Precio venta al publico del componente");
+		pvp = comprobarNumero();
+		System.out.println("Cuanto stock tiene del componente");
+		stock = comprobarNumero();
 
-			System.out.println("Precio venta al publico del componente");
-			pvp = Integer.parseInt(leer.nextLine());
+		do {
 
-			System.out.println("Cuanto stock tiene del componente");
-			stock = Integer.parseInt(leer.nextLine());
+			System.out.println("Introduzca la fecha de compra(dd-mm-yyyy)");
+			fechaCompra = leer.nextLine();
 
-		} catch (NumberFormatException e) {
+		} while (!comprobarVacio(fechaCompra) || fechaCompra.length()<10);
 
-			System.out.println("No ha introducido un numero");
-
-		}
-
-		System.out.println("Introduzca la fecha de compra(dd-mm-yyyy)");
-		fechaCompra = leer.nextLine();
 		fecha = (Date) formaFecha.parse(fechaCompra);
 
 		System.out.println();
 
-		System.out.println("Seleccione el tipo que desea");
-		mostrarTipos();
-		int idTipo = Integer.parseInt(leer.nextLine());
+		Tipo tipo = new Tipo();
 
-		System.out.println("Seleccione el subtipo a cual desea añadir");
-		mostrarSubtipo(idTipo);
-		int idSubtipo = Integer.parseInt(leer.nextLine());
+		do {
+
+			System.out.println("Seleccione el tipo que desea");
+			mostrarTipos();
+			idTipo = Integer.parseInt(leer.nextLine());
+			tipo = cogerTipo(idTipo);
+
+		} while (tipo == null);
 
 		Subtipo sub = new Subtipo();
-		sub = cogerSubtipo(idSubtipo);
+
+		do {
+
+			System.out.println("Seleccione el subtipo a cual desea añadir");
+			mostrarSubtipo(idTipo);
+
+			int idSubtipo = Integer.parseInt(leer.nextLine());
+
+			sub = cogerSubtipo(idSubtipo);
+			
+		} while (sub == null);
 
 		Componente comp = new Componente();
 		comp.setNombre(nombre);
@@ -212,7 +223,6 @@ public class Principal {
 		Session sesion = sesionF.openSession();
 		Transaction trans = sesion.beginTransaction();
 
-		Tipo tipo = new Tipo();
 		Query q = sesion.createQuery("from Subtipo where idSubtipo ="
 				+ idSubtipo);
 
@@ -225,6 +235,32 @@ public class Principal {
 			sub = (Subtipo) iter.next();
 
 			return sub;
+
+		}
+
+		return null;
+
+	}
+
+	public static Tipo cogerTipo(int idTipo) {
+
+		SessionFactory sesionF = SessionFactoryUtil.getSessionFactory();
+		Session sesion = sesionF.openSession();
+		Transaction trans = sesion.beginTransaction();
+
+		Tipo tipo = new Tipo();
+
+		Query q = sesion.createQuery("from Tipo where idTipo =" + idTipo);
+
+		Iterator<Tipo> iter;
+		q.setFetchSize(10);
+		iter = q.iterate();
+
+		while (iter.hasNext()) {
+
+			tipo = (Tipo) iter.next();
+
+			return tipo;
 
 		}
 
@@ -289,17 +325,27 @@ public class Principal {
 		SessionFactory sesionF = SessionFactoryUtil.getSessionFactory();
 		Session sesion = sesionF.openSession();
 		Transaction trans = sesion.beginTransaction();
-
+		int idSubtipo;
 		Componente comp = new Componente();
+		int idTipo;
+		Tipo tipo = new Tipo();
 
 		System.out.println("Seleccione tipo para buscar en los suptipos");
-		mostrarTipos();
-		int idTipo = Integer.parseInt(leer.nextLine());
+		do {
+			mostrarTipos();
+			idTipo = Integer.parseInt(leer.nextLine());
+			tipo = cogerTipo(idTipo);
 
+		} while (tipo == null);
+		Subtipo sub = new Subtipo();
 		System.out.println("Seleccione el subtipo para ver sus componentes");
-		mostrarSubtipo(idTipo);
-		int idSubtipo = Integer.parseInt(leer.nextLine());
+		do {
 
+			mostrarSubtipo(idTipo);
+			idSubtipo = Integer.parseInt(leer.nextLine());
+			sub = cogerSubtipo(idSubtipo);
+
+		} while (sub == null);
 		System.out.println("Elija el componente que desea eliminar");
 		mostrarComponentes(idSubtipo);
 		int idComponente = Integer.parseInt(leer.nextLine());
@@ -328,14 +374,28 @@ public class Principal {
 	public static Componente seleccionarComponente() {
 
 		Componente comp = new Componente();
-
+		Tipo tipo = new Tipo();
+		int idTipo;
+		int idSubtipo;
 		System.out.println("Seleccione tipo para buscar en los suptipos");
-		mostrarTipos();
-		int idTipo = Integer.parseInt(leer.nextLine());
+		do {
+
+			mostrarTipos();
+			idTipo = Integer.parseInt(leer.nextLine());
+			tipo = cogerTipo(idTipo);
+
+		} while (tipo == null);
 
 		System.out.println("Seleccione el subtipo para ver sus componentes");
-		mostrarSubtipo(idTipo);
-		int idSubtipo = Integer.parseInt(leer.nextLine());
+		Subtipo sub = new Subtipo();
+
+		do {
+
+			mostrarSubtipo(idTipo);
+			idSubtipo = Integer.parseInt(leer.nextLine());
+			sub = cogerSubtipo(idSubtipo);
+
+		} while (sub == null);
 
 		System.out.println("Elija el componente que desea eliminar");
 		mostrarComponentes(idSubtipo);
@@ -583,16 +643,32 @@ public class Principal {
 		SessionFactory sesionF = SessionFactoryUtil.getSessionFactory();
 		Session sesion = sesionF.openSession();
 		Transaction trans = sesion.beginTransaction();
-
+		int idTipo;
 		System.out.println("El subtipo es: " + comp.getSubtipo().toString());
 
+		Tipo tipo = new Tipo();
+
 		System.out.println("Introduzca el tipo:");
-		mostrarTipos();
-		int idTipo = Integer.parseInt(leer.nextLine());
+
+		do {
+
+			mostrarTipos();
+			idTipo = Integer.parseInt(leer.nextLine());
+			tipo = cogerTipo(idTipo);
+
+		} while (tipo == null);
+
+		Subtipo sub = new Subtipo();
+
 		System.out.println("Introduzca el subtipo");
-		mostrarSubtipo(idTipo);
-		int idSubtipo = Integer.parseInt(leer.nextLine());
-		Subtipo sub = cogerSubtipo(idSubtipo);
+
+		do {
+
+			mostrarSubtipo(idTipo);
+			int idSubtipo = Integer.parseInt(leer.nextLine());
+			sub = cogerSubtipo(idSubtipo);
+
+		} while (sub == null);
 
 		Query q = sesion.createQuery("from Componente where idComponente ="
 				+ comp.getIdComponente());
@@ -619,9 +695,9 @@ public class Principal {
 		int menu = -1;
 
 		do {
-			
+
 			try {
-				
+
 				System.out.println("MENU BUSCAR");
 				System.out.println("1.-Tipo");
 				System.out.println("2.-Nombre");
@@ -635,7 +711,7 @@ public class Principal {
 				System.out.println("No ha introducido un numero");
 
 			}
-			
+
 			switch (menu) {
 
 			case 1:
@@ -697,7 +773,7 @@ public class Principal {
 		if (!iter.hasNext()) {
 
 			System.out.println();
-			System.out.println("No corresponde a nada");
+			System.out.println("No contiene nada");
 			System.out.println();
 
 		}
@@ -818,5 +894,32 @@ public class Principal {
 
 		return true;
 
+	}
+
+	public static int comprobarNumero() {
+
+		boolean comprobar = true;
+		int comprobarNumero = -1;
+		String numero;
+
+		do {
+			if (!comprobar) {
+				System.out.println("Debe ser un numero, vuelva a insertarlo:");
+				comprobar = true;
+			}
+			numero = leer.nextLine();
+			try {
+
+				comprobarNumero = Integer.parseInt(numero);
+
+			} catch (NumberFormatException e) {
+
+				System.out.println("No ha introducido un numero");
+				comprobar = false;
+
+			}
+
+		} while (!comprobar);
+		return comprobarNumero;
 	}
 }
